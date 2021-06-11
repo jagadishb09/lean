@@ -81,13 +81,14 @@ iff.intro
     (assume hpq: p ∧ q, 
       have hp : p, from hpq.left,
       have hq : q, from hpq.right,
-      show p ∧ (q ∨ r), from ⟨hp, or.inl hq⟩
+      show p ∧ (q ∨ r), from ⟨hp, or.inl hq⟩ -- ⟨
     )  
     (assume hpr : p ∧ r,
        have hp : p, from hpr.left,
        have hr : r, from hpr.right,
        show p ∧ (q ∨ r), from ⟨hp, or.inr hr⟩))
-       
+
+--- new       
 example : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (p ∨ r) := 
 iff.intro
 (assume hpqr: p ∨ (q ∧ r), 
@@ -115,8 +116,6 @@ apply iff.intro,
  apply hpqr, from (and.intro hp hq)
 },
 end
-
-
 
 example : ((p ∨ q) → r) ↔ (p → r) ∧ (q → r) := 
 begin
@@ -146,9 +145,7 @@ apply iff.intro,
  },
 },
 end
--- done
 
---working
 example : ¬(p ∨ q) ↔ ¬p ∧ ¬q := 
 begin
 apply iff.intro,
@@ -157,22 +154,110 @@ apply iff.intro,
   split,
   {
     intro hp,
-    show false, from absurd hp hpq,
+    apply hpq, left, exact hp,
   },
   {
-    sorry
+    intro hq,
+    apply hpq, right, exact hq,
   },
 },
 {
-  sorry
+  intro hpq,
+  cases hpq with hnp hnq,
+   {
+     intro hpq1,
+     cases hpq1 with hp1 hq1,
+     {
+       apply hnp, exact hp1,
+     },
+     apply hnq, exact hq1,
+   },
 },
 end  
-example : ¬p ∨ ¬q → ¬(p ∧ q) := sorry
-example : ¬(p ∧ ¬p) := sorry
-example : p ∧ ¬q → ¬(p → q) := sorry
-example : ¬p → (p → q) := sorry
-example : (¬p ∨ q) → (p → q) := sorry
-example : p ∨ false ↔ p := sorry
-example : p ∧ false ↔ false := sorry
-example : (p → q) → (¬q → ¬p) := sorry
+
+example : ¬p ∨ ¬q → ¬(p ∧ q) :=
+begin
+intro hnpq,
+cases hnpq with hnp hnq,
+{
+  intro hnpq1, -- what is this doing?
+  apply hnp, exact hnpq1.left,
+},
+intro hnpq2,
+apply hnq, exact hnpq2.right,
+end
+
+example : ¬(p ∧ ¬p) := 
+begin
+intro hnp,
+cases hnp,
+apply hnp_right, exact hnp_left,
+end
+
+example : p ∧ ¬q → ¬(p → q) := 
+begin
+intro hpq,
+intro hinpq,
+have hp : p, from and.left hpq,
+cases hpq,
+apply hpq_right, apply hinpq, apply hp,
+end
+
+example : ¬p → (p → q) := 
+begin
+  intro hnp,
+  intro hnp1,
+  contradiction,
+end
+
+example : (¬p ∨ q) → (p → q) := 
+begin
+  intro hpq,
+  intro hpq1,
+  cases hpq,
+  {
+    contradiction
+  },
+  exact hpq,
+end
+
+example : p ∨ false ↔ p := 
+begin
+  apply iff.intro,
+  {
+    intro hpf,
+    cases hpf,
+    exact hpf,
+    contradiction,
+  },
+  {
+    intro hp,
+    show p ∨ false, from or.inl hp, -- how is it true?
+  },
+end
+
+
+example : p ∧ false ↔ false := 
+begin
+apply iff.intro,
+intro hpf,
+have hp : p, from hpf.left,
+show false, from hpf.right,
+intro hpf1,
+cases hpf1, -- what is this doing?
+end
+
+theorem t1 : p → q → p := λ hp : p, λ hq : q, hp
+
+example : (p → q) → (¬q → ¬p) := 
+begin
+intro hpq,
+intro hpq1,
+have hq : q, apply hpq,
+ { 
+    --have hp : p, from (and.intro t1, hpq)
+ },
+contradiction,
+
+end
 
