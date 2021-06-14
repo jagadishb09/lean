@@ -1,3 +1,6 @@
+--Exercise 3.7.1
+-- Author : Jagadish Bapanapally
+
 variables p q r : Prop
 
 -- commutativity of ∧ and ∨
@@ -247,17 +250,27 @@ intro hpf1,
 cases hpf1, -- what is this doing?
 end
 
-theorem t1 : p → q → p := λ hp : p, λ hq : q, hp
-
 example : (p → q) → (¬q → ¬p) := 
 begin
-intro hpq,
-intro hpq1,
-have hq : q, apply hpq,
- { 
-    --have hp : p, from (and.intro t1, hpq)
- },
-contradiction,
 
+intro hpq,
+intro hnq,
+intro hpq1, -- how?
+have hq : q, apply hpq,
+exact hpq1,
+contradiction,
 end
 
+--Exercise 3.7.2
+
+open classical
+
+variables s : Prop
+
+example : (p → r ∨ s) → ((p → r) ∨ (p → s)) := sorry
+example : ¬(p ∧ q) → ¬p ∨ ¬q := sorry
+example : ¬(p → q) → p ∧ ¬q := sorry
+example : (p → q) → (¬p ∨ q) := sorry
+example : (¬q → ¬p) → (p → q) := sorry
+example : p ∨ ¬p := sorry
+example : (((p → q) → p) → p) := sorry
