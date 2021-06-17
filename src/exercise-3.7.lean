@@ -93,15 +93,38 @@ iff.intro
 
 --- new       
 example : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (p ∨ r) := 
-iff.intro
-(assume hpqr: p ∨ (q ∧ r), 
-  or.elim hpqr
-  (sorry)
-  (sorry)
-)
-(assume hpqr1: (p ∨ q) ∧ (p ∨ r), 
-  sorry
-)
+begin
+apply iff.intro,
+intro pqr,
+cases pqr,
+split,
+left,
+exact pqr,
+left,
+exact pqr,
+split,
+cases pqr,
+right,
+exact pqr_left,
+cases pqr,
+right,
+exact pqr_right,
+intro pqr,
+cases pqr,
+cases pqr_left,
+cases pqr_right,
+left,
+exact pqr_left,
+left,
+exact pqr_left,
+cases pqr_right,
+left,
+exact pqr_right,
+right,
+split,
+exact pqr_left,
+exact pqr_right,
+end
 
 -- other properties
 example : (p → (q → r)) ↔ (p ∧ q → r) := 
@@ -184,7 +207,7 @@ intro hnpq,
 cases hnpq with hnp hnq,
 {
 
-  intro hnpq1, -- what is this doing?
+  intro hnpq1,
   apply hnp, exact hnpq1.left,
 },
 intro hnpq2,
@@ -236,7 +259,7 @@ begin
   },
   {
     intro hp,
-    show p ∨ false, from or.inl hp, -- how is it true?
+    show p ∨ false, from or.inl hp,
   },
 end
 
@@ -248,14 +271,14 @@ intro hpf,
 have hp : p, from hpf.left,
 show false, from hpf.right,
 intro hpf1,
-cases hpf1, -- what is this doing?
+cases hpf1,
 end
 
 example : (p → q) → (¬q → ¬p) := 
 begin
 intro hpq,
 intro hnq,
-intro hnp, -- how?
+intro hnp,
 have hq := hpq hnp,
 contradiction,
 end
@@ -310,9 +333,72 @@ contradiction,
 split,
 exact h,
 exact h_1,
+exfalso,
+apply pq,
+contradiction,
 end
 
-example : (p → q) → (¬p ∨ q) := sorry
-example : (¬q → ¬p) → (p → q) := sorry
-example : p ∨ ¬p := sorry
-example : (((p → q) → p) → p) := sorry
+example : (p → q) → (¬p ∨ q) := 
+begin
+intro pq,
+cases em p,
+right,
+show q, from pq h,
+left,
+exact h,
+end
+
+example : (¬q → ¬p) → (p → q) := 
+begin
+  intro qp,
+  cases em p,
+  cases em q,
+  intro hp,
+  exact h_1,
+  intro hp2,
+  exfalso,
+  apply qp,
+  exact h_1,
+  exact hp2,
+  intro hp1,
+  contradiction,
+end
+
+example : p ∨ ¬p := 
+begin
+  cases em p,
+  left,
+  exact h,
+  right,
+  exact h,
+end
+
+example : (((p → q) → p) → p) := 
+begin
+intro pq,
+cases em p,
+exact h,
+have hp : p, apply pq,
+intro hp,
+contradiction,
+exact hp,
+end
+
+
+--Exercise 3.7.3
+
+example : ¬(p ↔ ¬p) :=
+begin
+intro hp,
+cases hp,
+exfalso,
+apply hp_mp,
+apply hp_mpr,
+intro hp,
+have hnp := hp_mp hp,
+contradiction,
+apply hp_mpr,
+intro hp,
+have hnp:= hp_mp hp,
+contradiction,
+end
