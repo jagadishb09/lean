@@ -183,6 +183,7 @@ begin
 intro hnpq,
 cases hnpq with hnp hnq,
 {
+
   intro hnpq1, -- what is this doing?
   apply hnp, exact hnpq1.left,
 },
@@ -252,12 +253,10 @@ end
 
 example : (p → q) → (¬q → ¬p) := 
 begin
-
 intro hpq,
 intro hnq,
-intro hpq1, -- how?
-have hq : q, apply hpq,
-exact hpq1,
+intro hnp, -- how?
+have hq := hpq hnp,
 contradiction,
 end
 
@@ -267,9 +266,52 @@ open classical
 
 variables s : Prop
 
-example : (p → r ∨ s) → ((p → r) ∨ (p → s)) := sorry
-example : ¬(p ∧ q) → ¬p ∨ ¬q := sorry
-example : ¬(p → q) → p ∧ ¬q := sorry
+example : (p → r ∨ s) → ((p → r) ∨ (p → s)) :=
+begin
+intro prs,
+apply or.elim (em p),
+intro hp,
+have hors := prs hp,
+cases hors,
+left,
+intro hp1,
+exact hors,
+right,
+intro hp1,
+exact hors,
+intro nhp,
+left,
+intro hp10,
+contradiction,
+end
+
+example : ¬(p ∧ q) → ¬p ∨ ¬q := 
+begin
+  intro npq,
+  cases em p,
+  cases em q,
+  have hnq:= (and.intro h h_1),
+  contradiction,
+  right,
+  exact h_1,
+  left,
+  exact h,
+end
+
+example : ¬(p → q) → p ∧ ¬q := 
+begin
+intro pq,
+cases em p,
+cases em q,
+have pimpq : p → q,
+intro hp,
+exact h_1,
+contradiction,
+split,
+exact h,
+exact h_1,
+end
+
 example : (p → q) → (¬p ∨ q) := sorry
 example : (¬q → ¬p) → (p → q) := sorry
 example : p ∨ ¬p := sorry
