@@ -356,10 +356,8 @@ begin
   intro hp,
   exact h_1,
   intro hp2,
-  exfalso,
-  apply qp,
-  exact h_1,
-  exact hp2,
+  have nhp:= qp h_1,
+  contradiction,
   intro hp1,
   contradiction,
 end
@@ -391,7 +389,6 @@ example : ¬(p ↔ ¬p) :=
 begin
 intro hp,
 cases hp,
-exfalso,
 apply hp_mp,
 apply hp_mpr,
 intro hp,
